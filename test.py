@@ -9,6 +9,11 @@ ssh_username = ''
 ssh_password = ''
 enable_password = ''
 
+ftp_hostname = ''
+ftp_dirpath = ''
+ftp_username = ''
+ftp_password = ''
+
 client = paramiko.SSHClient()
 client.load_system_host_keys()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -28,9 +33,22 @@ try:
         ssh_con.send('terminal length 0\n')
         time.sleep(1)
         print(ssh_con.recv(65535).decode('utf-8'))
+        ssh_con.send('copy running-config startup-config\n')
+        time.sleep(1)
+        ssh_con.send('\n')
+        time.sleep(1)
+        print(ssh_con.recv(65535).decode('utf-8'))
+        ssh_con.send('copy running-config ftp://' + ftp_username + ':' + ftp_password + '@' + ftp_hostname + ftp_dirpath + '\n')
+        time.sleep(1)
+        ssh_con.send('\n')
+        time.sleep(1)
+        ssh_con.send('\n')
+        time.sleep(1)
+        print(ssh_con.recv(65535).decode('utf-8'))
         ssh_con.send('show running-config\n')
         time.sleep(1)
         print(ssh_con.recv(65535).decode('utf-8'))
+
     else:
         print('NG')
 
@@ -41,6 +59,3 @@ except Exception as e:
 
 finally:
     client.close()
-#stdin, stdout, stderr = client.exec_command('')
-#for line in stdout:
-#    print(line)
