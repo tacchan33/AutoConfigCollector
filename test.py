@@ -6,28 +6,25 @@ import time
 import concurrent.futures
 
 def main():
-    with open('./hosts.csv', newline='') as hosts:
-        csvReader = csv.reader(hosts)
 
-        #executor = concurrent.futures.ProcessPoolExecutor(max_workers=3)
-        hostname=[""]
-        ssh_username=[""]
-        ssh_password=[""]
-        enable_password=[""]
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            executor = executor.map(getResult, hostname, ssh_username, ssh_password, enable_password)
-            #for row in csvReader:
-                #hostname = row[0]
-                #ssh_username = row[1]
-                #ssh_password = row[2]
-                #enable_password = row[3]
-                #executor.submit(getResult(hostname,ssh_username,ssh_password,enable_password))
-                #print("end")
+    hosts = getHosts('./hosts.csv')
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        executor = executor.map(getResult, hosts['hostname'], hosts['ssh_username'], hosts['ssh_password'], hosts['enable_password'],)
+
+def getHosts(path='./hosts.csv'):
+    hosts = { 'hostname':[] , 'ssh_username':[] , 'ssh_password':[] , 'enable_password':[] , }
+    with open(path, newline='') as data:
+        csvData = csv.reader(data)
+        for row in csvData:
+            hosts['hostname'].append(row[0])
+            hosts['ssh_username'].append(row[1])
+            hosts['ssh_password'].append(row[2])
+            hosts['enable_password'].append(row[3])
+    return hosts
             
 
 def getResult(hostname="Router", ssh_username="admin", ssh_password="password", enable_password="enable"):
     print(hostname+"開始")
-    print(hostname+ssh_username,ssh_password,enable_password)
 
     ssh_client = paramiko.SSHClient()
     ssh_client.load_system_host_keys()
