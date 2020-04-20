@@ -1,4 +1,4 @@
-# AutoConfigCollector
+# Configuration Collector
 ## 説明
 Pythonが実行できる環境からSSHでネットワーク機器にログインして、コンフィグを自動取得します。  
 
