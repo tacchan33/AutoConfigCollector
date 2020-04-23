@@ -1,0 +1,3 @@
+HostsList: '/root/ConfigurationCollector/hosts.csv'
+
+ErrorLog: '/var/www/html/configuration-collector/###error.log'
