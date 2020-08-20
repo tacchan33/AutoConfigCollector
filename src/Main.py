@@ -14,8 +14,8 @@ class Main:
     def run(self):
         self.__configuration = self.__readConfigurationFile()
         self.__initializeErrorFile(path=self.__configuration['ErrorLog'])
-        self.__hosts = self.__readHostsFile(path=self.__configuration['HostsList'])
-        with concurrent.futures.ThreadPoolExecutor(max_workers=60) as executor:
+        self.__hosts = self.__readHostsFile(path=self.__configuration['HostsList'], columnNumber=self.__configuration['HostsList_ColumnNumber'])
+        with concurrent.futures.ThreadPoolExecutor(max_workers=500) as executor:
             executor = executor.map(self.__getResult,self.__hosts['command_type'], self.__hosts['hostname'], self.__hosts['ssh_username'], self.__hosts['ssh_password'])
 
     def __del__(self):
@@ -29,8 +29,31 @@ class Main:
             except Exception as e:
                 print(e)
         elif config_type == "2":
-            cmd = SSHCommandPattern2(hostname=hostname, username=username, password=password, errorlogPath=self.__configuration['ErrorLog'])
+            try:
+                cmd = SSHCommandPattern2(hostname=hostname, username=username, password=password, errorlogPath=self.__configuration['ErrorLog'])
+                del cmd
+            except Exception as e:
+                print(e)
+        elif config_type == "3":
+            try:
+                cmd = SSHCommandPattern3(hostname=hostname, username=username, password=password, errorlogPath=self.__configuration['ErrorLog'])
+                del cmd
+            except Exception as e:
+                print(e)
+        elif config_type == "4":
+            try:
+                cmd = SSHCommandPattern4(hostname=hostname, username=username, password=password, errorlogPath=self.__configuration['ErrorLog'])
+                del cmd
+            except Exception as e:
+                print(e)
+        elif config_type == "5":
+            cmd = SSHCommandPattern5(hostname=hostname, username=username, password=password, errorlogPath=self.__configuration['ErrorLog'])
             del cmd
+        elif config_type == "6":
+            cmd = SSHCommandPattern6(hostname=hostname, username=username, password=password, errorlogPath=self.__configuration['ErrorLog'])
+            del cmd
+        else:
+            print("["+hostname+"] SSHCommandPattern no found")
 
 
     def __initializeErrorFile(self, path):
@@ -52,7 +75,7 @@ class Main:
             print(e)
             sys.exit(1)
 
-    def __readHostsFile(self, path='./hosts.csv'):
+    def __readHostsFile(self, path='./hosts.csv', columnNumber=0):
         try:
             hosts = { 'hostname':[] , 'command_type':[] , 'ssh_username':[] , 'ssh_password':[] }
             with open(path, newline='') as hostsFile:
@@ -60,10 +83,10 @@ class Main:
                 next(csvData) #First line skipped
                 for row in csvData:
                     if '#' not in row[0]: # comments line skipped
-                        hosts['hostname'].append(row[0])
-                        hosts['command_type'].append(row[1])
-                        hosts['ssh_username'].append(row[2])
-                        hosts['ssh_password'].append(row[3])
+                        hosts['hostname'].append(row[columnNumber['FQDN']])
+                        hosts['command_type'].append(row[columnNumber['config_template']])
+                        hosts['ssh_username'].append(row[columnNumber['username']])
+                        hosts['ssh_password'].append(row[columnNumber['password']])
             return hosts
         except Exception as e:
             print('Loading Failed...')
