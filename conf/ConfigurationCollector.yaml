@@ -1,3 +1,8 @@
 HostsList: '/root/ConfigurationCollector/hosts.csv'
+HostsList_ColumnNumber:
+    FQDN: 0
+    config_template: 1
+    username: 2
+    password: 3
 
 ErrorLog: '/var/www/html/configuration-collector/###error.log'
