@@ -3,8 +3,14 @@
 Pythonが実行できる環境からSSHでネットワーク機器にログインして、コンフィグを自動取得します。  
 
 ## 対応ネットワーク機器
-* Cisco Systems IOS
-* Panasonic LS Networks MNO Series
+* Cisco Systems Catalyst Series
+* Cisco Systems Cisco Router
+* Cisco Systems Firepower, ASA
+* Mellanox Technologies Ethernet Switch
+* Panasonic LS Networks Switch(MNO) Series
+* A10 Thunder Series
+* Fortinet FortiGate Series(enable DOM)
+
 
 ## 動作環境
 * Python 3.6.8
