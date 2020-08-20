@@ -1,1 +1,2 @@
-FQDN,model,username,password
+FQDN,pattern,username,password
+switch.hogehoge.com,1,hoge,pass
