@@ -58,13 +58,13 @@ class SSHCommand(object):
         print('Override')
 
 
-### Cisco Router and Switch
+### Cisco Router and Catalyst Switch
 class SSHCommandPattern1(SSHCommand):
     def sendCommand(self):
         time.sleep(3)
         self.connection.send('enable\n')
         time.sleep(1)
-        self.connection.send('enable-pass' + '\n')
+        self.connection.send('enable-password' + '\n')
         time.sleep(1)
         self.connection.send('terminal length 0\n')
         time.sleep(1)
@@ -74,12 +74,22 @@ class SSHCommandPattern1(SSHCommand):
         self.connection.send('\n')
         time.sleep(5)
         self.connection.send('show running-config\n')
+        time.sleep(15)
+        self.connection.send('show interface status\n')
+        time.sleep(5)
+        self.connection.send('show ip interface brief\n')
+        time.sleep(5)
+        self.connection.send('show lldp neighbors\n')
+        time.sleep(5)
+        self.connection.send('show cdp neighbors\n')
+        time.sleep(5)
+        self.connection.send('show inventory\n')
         time.sleep(10)
         self.result = self.connection.recv(65535).decode('utf-8')
         self.connection.send('exit\n')
         time.sleep(3)
 
-        if len(self.result) > 1000:
+        if len(self.result) > 250:
             file = ''
             try:
                 file = open("/var/www/html/configuration-collector/"+self.hostname+".log","w")
@@ -105,6 +115,12 @@ class SSHCommandPattern2(SSHCommand):
         self.connection.send('copy running-config startup-config\n')
         time.sleep(5)
         self.connection.send('show running-config\n')
+        time.sleep(20)
+        self.connection.send('show interface info\n')
+        time.sleep(10)
+        self.connection.send('show vlan all\n')
+        time.sleep(10)
+        self.connection.send('show lldp neighbors\n')
         time.sleep(10)
         self.result = self.connection.recv(65535).decode('utf-8','ignore')
         self.connection.send('exit\n')
@@ -114,7 +130,147 @@ class SSHCommandPattern2(SSHCommand):
         self.connection.send('q\n')
         time.sleep(3)
 
-        if len(self.result) > 1000:
+        if len(self.result) > 250:
+            file = ''
+            try:
+                file = open("/var/www/html/configuration-collector/"+self.hostname+".log","w")
+                file.write(self.result)
+                print("["+self.hostname+"] Getting config complete!")
+            except Exception as e:
+                print("["+self.hostname+"] Getting config failed")
+                print(e)
+            finally:
+                file.close()
+
+
+### A10 thunder
+class SSHCommandPattern3(SSHCommand):
+    def sendCommand(self):
+        time.sleep(3)
+        self.connection.send('enable\n')
+        time.sleep(1)
+        self.connection.send('enable-password' + '\n')
+        time.sleep(1)
+        self.connection.send('terminal length 0\n')
+        time.sleep(1)
+        self.connection.recv(65535).decode('utf-8')
+        time.sleep(5)
+        self.connection.send('show running-config\n')
+        time.sleep(15)
+        self.result = self.connection.recv(655350).decode('utf-8')
+        self.connection.send('exit\n')
+        time.sleep(3)
+        self.connection.send('exit\n')
+        time.sleep(3)
+        self.connection.send('y')
+        time.sleep(3)
+
+        if len(self.result) > 250:
+            file = ''
+            try:
+                file = open("/var/www/html/configuration-collector/"+self.hostname+".log","w")
+                file.write(self.result)
+                print("["+self.hostname+"] Getting config complete!")
+            except Exception as e:
+                print("["+self.hostname+"] Getting config failed")
+                print(e)
+            finally:
+                file.close()
+
+
+### Fortinet FortiGate Series
+class SSHCommandPattern4(SSHCommand):
+    def sendCommand(self):
+        time.sleep(3)
+        self.connection.send('show\n')
+        time.sleep(20)
+        self.result = self.connection.recv(655350).decode('utf-8')
+        self.connection.send('exit\n')
+        time.sleep(3)
+
+        if len(self.result) > 250:
+            file = ''
+            try:
+                file = open("/var/www/html/configuration-collector/"+self.hostname+".log","w")
+                file.write(self.result)
+                print("["+self.hostname+"] Getting config complete!")
+            except Exception as e:
+                print("["+self.hostname+"] Getting config failed")
+                print(e)
+            finally:
+                file.close()
+
+
+### Cisco Firepower, ASA
+class SSHCommandPattern5(SSHCommand):
+    def sendCommand(self):
+        time.sleep(3)
+        self.connection.send('enable\n')
+        time.sleep(1)
+        self.connection.send('enable-password' + '\n')
+        time.sleep(1)
+        self.connection.send('terminal pager 0\n')
+        time.sleep(1)
+        self.connection.recv(65535).decode('utf-8')
+        self.connection.send('copy running-config startup-config\n')
+        time.sleep(10)
+        self.connection.send('\n')
+        time.sleep(5)
+        self.connection.send('show running-config\n')
+        time.sleep(15)
+        self.connection.send('show ip address\n')
+        time.sleep(5)
+        self.connection.send('show lldp neighbors\n')
+        time.sleep(5)
+        self.connection.send('show cdp neighbors\n')
+        time.sleep(5)
+        self.connection.send('show inventory\n')
+        time.sleep(5)
+        self.result = self.connection.recv(655350).decode('utf-8')
+        self.connection.send('exit\n')
+        time.sleep(3)
+
+        if len(self.result) > 250:
+            file = ''
+            try:
+                file = open("/var/www/html/configuration-collector/"+self.hostname+".log","w")
+                file.write(self.result)
+                print("["+self.hostname+"] Getting config complete!")
+            except Exception as e:
+                print("["+self.hostname+"] Getting config failed")
+                print(e)
+            finally:
+                file.close()
+
+
+### Mellanox Ethernet Switch
+class SSHCommandPattern6(SSHCommand):
+    def sendCommand(self):
+        time.sleep(10)
+        self.connection.send('enable\n')
+        time.sleep(1)
+        self.connection.send('no cli session paging enable\n')
+        time.sleep(3)
+        self.connection.recv(65535).decode('utf-8')
+        self.connection.send('write memory\n')
+        time.sleep(3)
+        self.connection.send('\n')
+        time.sleep(5)
+        self.connection.send('show running-config\n')
+        time.sleep(15)
+        self.connection.send('show interface status\n')
+        time.sleep(5)
+        self.connection.send('show ip interface brief\n')
+        time.sleep(5)
+        self.connection.send('show lldp remote\n')
+        time.sleep(5)
+        self.connection.send('show inventory\n')
+        time.sleep(10)
+        self.result = self.connection.recv(65535).decode('utf-8')
+        self.connection.send('exit\n')
+        time.sleep(3)
+
+        if len(self.result) > 250:
             file = ''
             try:
                 file = open("/var/www/html/configuration-collector/"+self.hostname+".log","w")
